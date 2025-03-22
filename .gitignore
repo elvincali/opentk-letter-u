@@ -1,0 +1,45 @@
+# Archivos y carpetas específicos de .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos específicos de Visual Studio
+.vs/
+*.csproj.user
+*.pubxml
+*.pubxml.user
+.vscode/
+*.vspscc
+*.vssscc
+
+# Archivos de respaldo y temporales
+*~
+*.swp
+*.bak
+*.cache
+*.tmp
+
+# Archivos de compilación
+*.dll
+*.exe
+*.pdb
+*.dll.config
+
+# Archivos de dependencias
+packages/
+*.nupkg
+
+# Archivos de configuración local
+appsettings.*.json
+!appsettings.json
+
+# Archivos de registro
+*.log
+logs/
+
+# Archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db 
