@@ -14,77 +14,23 @@ public class LetterU : IDisposable
     private Vector3 _scale;
     private Vector3 _rotation;
 
-    // Vértices para la U en 3D usando rectángulos
-    private readonly float[] _vertices =
+    private Vector3 _color;
+
+    private float[] _vertices;
+    private uint[] _indices;
+
+    public LetterU(Vector3 position, Vector3 color)
     {
-        // Posiciones de los vértices
-        // Lado izquierdo
-        -0.6f,  0.8f,  0.2f,  // 0: frente-arriba-izquierda
-        -0.3f,  0.8f,  0.2f,  // 1: frente-arriba-derecha
-        -0.3f, -0.8f,  0.2f,  // 2: frente-abajo-derecha
-        -0.6f, -0.8f,  0.2f,  // 3: frente-abajo-izquierda
-        -0.6f,  0.8f, -0.2f,  // 4: atrás-arriba-izquierda
-        -0.3f,  0.8f, -0.2f,  // 5: atrás-arriba-derecha
-        -0.3f, -0.8f, -0.2f,  // 6: atrás-abajo-derecha
-        -0.6f, -0.8f, -0.2f,  // 7: atrás-abajo-izquierda
-
-        // Lado derecho
-        0.3f,  0.8f,  0.2f,   // 8: frente-arriba-izquierda
-        0.6f,  0.8f,  0.2f,   // 9: frente-arriba-derecha
-        0.6f, -0.8f,  0.2f,   // 10: frente-abajo-derecha
-        0.3f, -0.8f,  0.2f,   // 11: frente-abajo-izquierda
-        0.3f,  0.8f, -0.2f,   // 12: atrás-arriba-izquierda
-        0.6f,  0.8f, -0.2f,   // 13: atrás-arriba-derecha
-        0.6f, -0.8f, -0.2f,   // 14: atrás-abajo-derecha
-        0.3f, -0.8f, -0.2f,   // 15: atrás-abajo-izquierda
-
-        // Base
-        -0.3f, -0.5f,  0.2f,  // 16: frente-arriba-izquierda
-        0.3f, -0.5f,  0.2f,   // 17: frente-arriba-derecha
-        0.3f, -0.8f,  0.2f,   // 18: frente-abajo-derecha
-        -0.3f, -0.8f,  0.2f,  // 19: frente-abajo-izquierda
-        -0.3f, -0.5f, -0.2f,  // 20: atrás-arriba-izquierda
-        0.3f, -0.5f, -0.2f,   // 21: atrás-arriba-derecha
-        0.3f, -0.8f, -0.2f,   // 22: atrás-abajo-derecha
-        -0.3f, -0.8f, -0.2f   // 23: atrás-abajo-izquierda
-    };
-
-    // Índices para dibujar los rectángulos
-    private readonly uint[] _indices =
-    {
-        // Lado izquierdo
-        0, 1, 2, 0, 2, 3,     // cara frontal
-        4, 5, 6, 4, 6, 7,     // cara trasera
-        0, 4, 7, 0, 7, 3,     // cara izquierda
-        1, 5, 6, 1, 6, 2,     // cara derecha
-        0, 1, 5, 0, 5, 4,     // cara superior
-        3, 2, 6, 3, 6, 7,     // cara inferior
-
-        // Lado derecho
-        8, 9, 10, 8, 10, 11,  // cara frontal
-        12, 13, 14, 12, 14, 15, // cara trasera
-        8, 12, 15, 8, 15, 11,   // cara izquierda
-        9, 13, 14, 9, 14, 10,   // cara derecha
-        8, 9, 13, 8, 13, 12,    // cara superior
-        11, 10, 14, 11, 14, 15, // cara inferior
-
-        // Base
-        16, 17, 18, 16, 18, 19, // cara frontal
-        20, 21, 22, 20, 22, 23, // cara trasera
-        16, 20, 23, 16, 23, 19, // cara izquierda
-        17, 21, 22, 17, 22, 18, // cara derecha
-        16, 17, 21, 16, 21, 20, // cara superior
-        19, 18, 22, 19, 22, 23  // cara inferior
-    };
-
-    public LetterU()
-    {
-        _position = Vector3.Zero;  // Posición inicial en (0,0,0)
-        _scale = Vector3.One;      // Escala inicial 1:1:1
-        _rotation = Vector3.Zero;  // Sin rotación inicial
+        _position = position;
+        _scale = Vector3.One;
+        _rotation = Vector3.Zero;
         UpdateModelMatrix();
-        
-        // Crear y configurar el VBO
+
+        _color = color;
+
+        createRectangles();
+
+        // Configurar buffers
         _vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
@@ -107,6 +53,53 @@ public class LetterU : IDisposable
 
         // Crear shader
         _shader = new Shader("Shaders/letter.vert", "Shaders/letter.frag");
+    }
+
+    private void createRectangles()
+    {
+        // Definir los rectángulos que forman la U
+        var rectangles = new[]
+        {
+            // Lado izquierdo
+            new Rectangle(
+                new Vector3(-0.6f, 0.8f, 0.0f),
+                new Vector3(-0.3f, 0.8f, 0.0f),
+                new Vector3(-0.3f, -0.8f, 0.0f),
+                new Vector3(-0.6f, -0.8f, 0.0f),
+                0.2f
+            ),
+            // Lado derecho
+            new Rectangle(
+                new Vector3(0.3f, 0.8f, 0.0f),
+                new Vector3(0.6f, 0.8f, 0.0f),
+                new Vector3(0.6f, -0.8f, 0.0f),
+                new Vector3(0.3f, -0.8f, 0.0f),
+                0.2f
+            ),
+            // Base
+            new Rectangle(
+                new Vector3(-0.3f, -0.5f, 0.0f),
+                new Vector3(0.3f, -0.5f, 0.0f),
+                new Vector3(0.3f, -0.8f, 0.0f),
+                new Vector3(-0.3f, -0.8f, 0.0f),
+                0.2f
+            )
+        };
+
+        // Generar vértices e índices
+        var vertexList = new List<float>();
+        var indexList = new List<uint>();
+        uint currentIndex = 0;
+
+        foreach (var rect in rectangles)
+        {
+            vertexList.AddRange(rect.ToVertices());
+            indexList.AddRange(rect.ToIndices(currentIndex));
+            currentIndex += 8; // Cada rectángulo usa 8 vértices
+        }
+
+        _vertices = vertexList.ToArray();
+        _indices = indexList.ToArray();
     }
 
     private void UpdateModelMatrix()
@@ -168,8 +161,7 @@ public class LetterU : IDisposable
         _shader.SetMatrix4("projection", projection);
 
         // Configurar color
-        // Color azul claro
-        _shader.SetVector3("objectColor", new Vector3(1.0f, 1.0f, 1.0f));
+        _shader.SetVector3("objectColor", _color);
 
         GL.BindVertexArray(_vertexArrayObject);
         GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);

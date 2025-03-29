@@ -3,13 +3,14 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Data.Common;
 
 namespace OpenTKExample;
 
 public class Window : GameWindow 
 {
     private CoordinateSystem _coordinateSystem;
-    private LetterU _letterU;
+    private List<LetterU> _letters;
     private bool _showCoordinates = true;
     private Matrix4 _projection;
 
@@ -30,6 +31,7 @@ public class Window : GameWindow
         : base(gameWindowSettings, nativeWindowSettings)
     {
         CursorState = CursorState.Grabbed;
+        _letters = new List<LetterU>();
     }
 
     protected override void OnLoad()
@@ -48,8 +50,23 @@ public class Window : GameWindow
         );
 
         // Inicializar objetos
+        InitObjects();
+    }
+
+    private void InitObjects()
+    {
+        // Ejes de coordenadas
         _coordinateSystem = new CoordinateSystem();
-        _letterU = new LetterU();
+
+        // Letra U1
+        var position1 = new Vector3(0.0f, 0.0f, 0.0f);
+        var color1 = new Vector3(1.0f, 1.0f, 1.0f);
+        _letters.Add(new LetterU(position1, color1));
+
+        // Letra U2
+        var position2 = new Vector3(2.0f, 1.0f, 0.0f);
+        var color2 = new Vector3(0.5f, 1.0f, 0.5f);
+        _letters.Add(new LetterU(position2, color2));
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -62,7 +79,10 @@ public class Window : GameWindow
         Matrix4 view = Matrix4.LookAt(_cameraPos, _cameraPos + _cameraFront, _cameraUp);
 
         // Renderizar la letra U
-        _letterU.Render(view, _projection);
+        foreach (var letter in _letters)
+        {
+            letter.Render(view, _projection);
+        }
 
         // Renderizar el sistema de coordenadas si está activado
         if (_showCoordinates)
@@ -105,46 +125,46 @@ public class Window : GameWindow
 
         // Mover la letra U con las flechas
         if (input.IsKeyDown(Keys.Left))
-            _letterU.Move(new Vector3(-1.0f * (float)e.Time, 0.0f, 0.0f));
+            _letters[0].Move(new Vector3(-1.0f * (float)e.Time, 0.0f, 0.0f));
         if (input.IsKeyDown(Keys.Right))
-            _letterU.Move(new Vector3(1.0f * (float)e.Time, 0.0f, 0.0f));
+            _letters[0].Move(new Vector3(1.0f * (float)e.Time, 0.0f, 0.0f));
         if (input.IsKeyDown(Keys.Up))
-            _letterU.Move(new Vector3(0.0f, 1.0f * (float)e.Time, 0.0f));
+            _letters[0].Move(new Vector3(0.0f, 1.0f * (float)e.Time, 0.0f));
         if (input.IsKeyDown(Keys.Down))
-            _letterU.Move(new Vector3(0.0f, -1.0f * (float)e.Time, 0.0f));
+            _letters[0].Move(new Vector3(0.0f, -1.0f * (float)e.Time, 0.0f));
 
         // Mover en el eje Z con PageUp/PageDown
         if (input.IsKeyDown(Keys.PageUp))
-            _letterU.Move(new Vector3(0.0f, 0.0f, 1.0f * (float)e.Time));
+            _letters[0].Move(new Vector3(0.0f, 0.0f, 1.0f * (float)e.Time));
         if (input.IsKeyDown(Keys.PageDown))
-            _letterU.Move(new Vector3(0.0f, 0.0f, -1.0f * (float)e.Time));
+            _letters[0].Move(new Vector3(0.0f, 0.0f, -1.0f * (float)e.Time));
 
         // Escalar con + y -
         if (input.IsKeyDown(Keys.KeyPadAdd))
-            _letterU.Scale(1.0f + 0.5f * (float)e.Time);
+            _letters[0].Scale(1.0f + 0.5f * (float)e.Time);
         if (input.IsKeyDown(Keys.KeyPadSubtract))
-            _letterU.Scale(1.0f - 0.5f * (float)e.Time);
+            _letters[0].Scale(1.0f - 0.5f * (float)e.Time);
 
         // Rotar con Q/E (eje Y), R/F (eje X) y Z/X (eje Z)
         if (input.IsKeyDown(Keys.Q))
-            _letterU.Rotate(new Vector3(0.0f, MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f));
+            _letters[0].Rotate(new Vector3(0.0f, MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f));
         if (input.IsKeyDown(Keys.E))
-            _letterU.Rotate(new Vector3(0.0f, -MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f));
+            _letters[0].Rotate(new Vector3(0.0f, -MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f));
         if (input.IsKeyDown(Keys.R))
-            _letterU.Rotate(new Vector3(MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f, 0.0f));
+            _letters[0].Rotate(new Vector3(MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f, 0.0f));
         if (input.IsKeyDown(Keys.F))
-            _letterU.Rotate(new Vector3(-MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f, 0.0f));
+            _letters[0].Rotate(new Vector3(-MathHelper.DegreesToRadians(90.0f) * (float)e.Time, 0.0f, 0.0f));
         if (input.IsKeyDown(Keys.Z))
-            _letterU.Rotate(new Vector3(0.0f, 0.0f, MathHelper.DegreesToRadians(90.0f) * (float)e.Time));
+            _letters[0].Rotate(new Vector3(0.0f, 0.0f, MathHelper.DegreesToRadians(90.0f) * (float)e.Time));
         if (input.IsKeyDown(Keys.X))
-            _letterU.Rotate(new Vector3(0.0f, 0.0f, -MathHelper.DegreesToRadians(90.0f) * (float)e.Time));
+            _letters[0].Rotate(new Vector3(0.0f, 0.0f, -MathHelper.DegreesToRadians(90.0f) * (float)e.Time));
 
         // Resetear posición con la tecla 0 del teclado numérico
         if (input.IsKeyPressed(Keys.KeyPad0))
         {
-            _letterU.SetPosition(Vector3.Zero);
-            _letterU.SetRotation(Vector3.Zero);
-            _letterU.SetScale(Vector3.One);
+            _letters[0].SetPosition(Vector3.Zero);
+            _letters[0].SetRotation(Vector3.Zero);
+            _letters[0].SetScale(Vector3.One);
         }
     }
 
@@ -195,7 +215,10 @@ public class Window : GameWindow
     protected override void OnUnload()
     {
         _coordinateSystem.Dispose();
-        _letterU.Dispose();
+        foreach (var letter in _letters)
+        {
+            letter.Dispose();
+        }
 
         base.OnUnload();
     }
