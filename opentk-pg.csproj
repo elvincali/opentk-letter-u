@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Shaders/**" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Core/Shaders/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

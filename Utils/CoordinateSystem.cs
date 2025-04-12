@@ -1,7 +1,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace OpenTKExample;
+namespace OpenTKExample.Utils;
 
 public class CoordinateSystem : IDisposable
 {
@@ -46,7 +46,7 @@ public class CoordinateSystem : IDisposable
         GL.EnableVertexAttribArray(1);
 
         // Crear shader específico para los ejes
-        _shader = new Shader("Shaders/coordinate.vert", "Shaders/coordinate.frag");
+        _shader = new Shader("./Core/Shaders/coordinate.vert", "./Core/Shaders/coordinate.frag");
     }
 
     public void Render(Matrix4 view, Matrix4 projection)

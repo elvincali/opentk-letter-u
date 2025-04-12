@@ -7,7 +7,7 @@ public static class Game
 {
     private const int WIDTH = 800;
     private const int HEIGHT = 600;
-    private const string TITLE = "OpenTK en Fedora";
+    private const string TITLE = "OpenTK - PG";
 
     public static void Main()
     {
