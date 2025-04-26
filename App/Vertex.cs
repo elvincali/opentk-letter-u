@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace OpenTKExample;
+namespace OpenTKExample.App;
 
 public struct Vertex
 {

@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace OpenTKExample;
+namespace OpenTKExample.App;
 
 public class Object3D : IDisposable
 {
@@ -15,6 +15,8 @@ public class Object3D : IDisposable
         Name = name;
         Parts = new List<Part>();
         Scale = Vector3.One;
+        Rotation = Vector3.Zero;
+        Position = Vector3.Zero;
     }
 
     public void SetPosition(Vector3 position)
@@ -27,17 +29,56 @@ public class Object3D : IDisposable
         Parts.Add(part);
     }
 
-    public void Render(Matrix4 view, Matrix4 projection)
+    public void ScaleBy(Vector3 scale)
     {
-        Matrix4 model = Matrix4.CreateScale(Scale) *
-                       Matrix4.CreateRotationX(Rotation.X) *
-                       Matrix4.CreateRotationY(Rotation.Y) *
-                       Matrix4.CreateRotationZ(Rotation.Z) *
-                       Matrix4.CreateTranslation(Position);
+        Scale *= scale;
+        foreach (var part in Parts)
+        {
+            part.ScaleBy(scale);
+        }
+    }
+
+    public void RotateBy(Vector3 rotation)
+    {
+        Rotation += rotation;
+        foreach (var part in Parts)
+        {
+            part.RotateBy(rotation);
+        }
+    }
+
+    public void TranslateBy(Vector3 translation)
+    {
+        Position += translation;
+        foreach (var part in Parts)
+        {
+            part.TranslateBy(translation);
+        }
+    }
+
+    public void Reset()
+    {
+        Scale = Vector3.One;
+        Rotation = Vector3.Zero;
+        Position = Vector3.Zero;
+        foreach (var part in Parts)
+        {
+            part.Reset();
+        }
+    }
+
+    public void Render(Matrix4 model, Matrix4 view, Matrix4 projection)
+    {
+        Matrix4 objectModel = model *
+                            Matrix4.CreateScale(Scale) *
+                            Matrix4.CreateRotationX(Rotation.X) *
+                            Matrix4.CreateRotationY(Rotation.Y) *
+                            Matrix4.CreateRotationZ(Rotation.Z) *
+                            Matrix4.CreateTranslation(Position);
 
         foreach (var part in Parts)
         {
-            part.Render(model, view, projection);
+            part.Render(objectModel, view, projection);
         }
     }
 

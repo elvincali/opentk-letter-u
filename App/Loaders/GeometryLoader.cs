@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using OpenTK.Mathematics;
 using OpenTKExample.Models;
-
+using OpenTKExample.App;
 namespace OpenTKExample.Loaders;
 
 public static class GeometryLoader

@@ -1,5 +1,6 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
+using OpenTKExample.App;
 
 namespace OpenTKExample;
 

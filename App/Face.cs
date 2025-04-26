@@ -1,7 +1,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace OpenTKExample;
+namespace OpenTKExample.App;
 
 public class Face : IDisposable
 {
@@ -12,12 +12,18 @@ public class Face : IDisposable
     private List<Vertex> _vertices;
     private uint[] _indices;
     private Vector3 _color;
+    private Vector3 _scale;
+    private Vector3 _rotation;
+    private Vector3 _position;
 
     public Face(List<Vertex> vertices, uint[] indices, Vector3 color)
     {
         _vertices = vertices;
         _indices = indices;
         _color = color;
+        _scale = Vector3.One;
+        _rotation = Vector3.Zero;
+        _position = Vector3.Zero;
 
         // Configurar buffers
         _vertexBufferObject = GL.GenBuffer();
@@ -44,12 +50,41 @@ public class Face : IDisposable
         _shader = new Shader("./Core/Shaders/letter.vert", "./Core/Shaders/letter.frag");
     }
 
+    public void ScaleBy(Vector3 scale)
+    {
+        _scale *= scale;
+    }
+
+    public void RotateBy(Vector3 rotation)
+    {
+        _rotation += rotation;
+    }
+
+    public void TranslateBy(Vector3 translation)
+    {
+        _position += translation;
+    }
+
+    public void Reset()
+    {
+        _scale = Vector3.One;
+        _rotation = Vector3.Zero;
+        _position = Vector3.Zero;
+    }
+
     public void Render(Matrix4 model, Matrix4 view, Matrix4 projection)
     {
         _shader.Use();
 
         // Configurar uniforms
-        _shader.SetMatrix4("model", model);
+        Matrix4 finalModel = model * 
+                           Matrix4.CreateScale(_scale) *
+                           Matrix4.CreateRotationX(_rotation.X) *
+                           Matrix4.CreateRotationY(_rotation.Y) *
+                           Matrix4.CreateRotationZ(_rotation.Z) *
+                           Matrix4.CreateTranslation(_position);
+        
+        _shader.SetMatrix4("model", finalModel);
         _shader.SetMatrix4("view", view);
         _shader.SetMatrix4("projection", projection);
         _shader.SetVector3("objectColor", _color);
